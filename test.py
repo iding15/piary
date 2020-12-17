@@ -3,10 +3,8 @@ file = 'test.html'
 test = writeText(file)
 test.getTree()
 
-hs = hand(file, 'head', 'style')
-hs.push_up(1)
-hscr = hand(file, 'head', 'script')
-hscr.push_up(2)
-bscr = hand(file, 'body', 'script')
-bscr.push_up(4)
+h = hand(file, 'head')
+h.push_up(['style','script'],[2,3])
+b = hand(file, 'body')
+b.push_up(['div','p','script'],[2,4,2])
 
