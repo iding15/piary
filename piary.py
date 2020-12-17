@@ -20,12 +20,18 @@ class hand:
     def __init__(self, fileName, tail):
         self.fileName = fileName
         self.tail = tail
+    def borrow(self):
+        with open(self.fileName, 'r') as r:
+            asset = r.read()
+        return asset
+    def earn(self,asset):
+        with open(self.fileName, 'w+') as f:
+            f.write(asset)
     def push_up(self, tagList, countList):
         tail = self.tail
         s_tail = '</'+tail+'>'
         pattern = re.compile('('+s_tail+')')  
-        with open(self.fileName,'r') as r:
-            s_up = r.read()       
+        s_up = self.borrow()       
         c_=0     
         for tag in tagList:           
             c=1
@@ -34,28 +40,31 @@ class hand:
                 s_up = pattern.sub(mark_tag(tail,tag,c+1)+s_tail, s_up)
                 c = c+1
             c_=c_+1
-            with open(self.fileName, 'w+') as f:
-                f.write(s_up)
-            with open(self.fileName, 'r') as r:
-                s_up = r.read()
-    # def draw(self, children=[self.tag], contents):
-    #     if children==[]:
-
-
-# def tracker(head_body, tag, num):
-#     if tag == 'script':
-#         leash = '//'+head_body+'_'+tag+num+'//'
-#     elif tag == 'style':
-#         leash = '/*'+head_body+'_'+tag+num+'*/'
-#     else:
-#         leash = '<!--'+head_body+'_'+tag+num+'-->'
-#     return leash
-# class paper:
-#     def __init__(self,fileName,head_body,tag,num):
-#         self.fileName = fileName
-#         self.tag = tag
-#         self.leash = tracker(head_body, tag, num)
-#         with open(self.fileName,'r') as r:
-#             self.grown_up = r.read()
-#     def draw(self,contents):
-        
+            # with open(self.fileName, 'w+') as f:
+            #     f.write(s_up)
+            self.earn(s_up)
+            self.borrow()
+    def tracker(self, tail, tag, num):
+        long_tail=tail+'_'+tag
+        if tag == 'script':
+            leash = '//'+long_tail+str(num)+'//'
+        elif tag == 'style':
+            leash = '/*'+long_tail+str(num)+'*/'
+        else:
+            leash = '<!--'+long_tail+str(num)+'-->'
+        return leash
+    def children(self, tag, num, kids):
+        tail=self.tail
+        leash=self.tracker(tail, tag, num)
+        asset=self.borrow()    
+        tab=2
+        long_tail=tail
+        for kid in kids:
+            leash=self.tracker(long_tail,tag,num)
+            long_tail=long_tail+'_'+tag
+            asset=asset.replace('\t'*tab+leash,mark_tag(long_tail,kid,num,tab))
+            tail=tag
+            tag=kid
+            tab=tab+1
+            self.earn(asset)
+            asset=self.borrow()
